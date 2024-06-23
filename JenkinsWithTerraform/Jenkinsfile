@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/jaysisharma/DevOps-Projects.git'
+            }
+        }
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+        stage('Terraform Plan') {
+            steps {
+                sh 'terraform plan'
+            }
+        }
+        stage('Terraform Apply') {
+            steps {
+                sh 'terraform apply -auto-approve'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Website deployed successfully!"
+            echo "S3 Website URL: ${terraform.output.s3_bucket_website_url}"
+            echo "CloudFront Distribution Domain Name: ${terraform.output.cloudfront_distribution_domain_name}"
+        }
+    }
+}
